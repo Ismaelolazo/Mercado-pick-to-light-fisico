@@ -48,8 +48,30 @@ for usuario, estantes in usuarios.items():
     panel_usuario = pn.Column(f"### {usuario.upper()}", *estantes_widgets)
     panels.append(panel_usuario)
 
-# Dashboard final
-dashboard = pn.Row(*panels)
+# Agregar lista de productos y funcionalidad de selección
+productos = ["Carne", "Frutas", "Verduras", "Lácteos", "Panadería"]
+
+# Función para manejar la selección de productos
+def seleccionar_producto(event):
+    producto = event.new
+    try:
+        r = requests.post(f"{SERVER_URL}/select_product", json={"producto": producto})
+        print(f"Producto seleccionado: {producto} -> {r.status_code}")
+    except Exception as e:
+        print(f"Error al seleccionar producto: {e}")
+
+# Widget para seleccionar productos
+producto_selector = pn.widgets.Select(name="Seleccionar Producto", options=productos)
+producto_selector.param.watch(seleccionar_producto, 'value')
+
+# Actualizar el dashboard para incluir la selección de productos
+dashboard = pn.Column(
+    "## Bienvenido al Mercado Pick to Light",
+    "Seleccione un producto para ser guiado:",
+    producto_selector,
+    pn.Row(*panels)
+)
+
 dashboard.servable()
 
 # Si se ejecuta directamente

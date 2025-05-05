@@ -1,7 +1,24 @@
 # 📁 raspberry/main.py
-from machine import Pin
-import utime
-import urequests
+# Simulación del módulo 'machine' para entornos no MicroPython
+class Pin:
+    OUT = 'out'
+
+    def __init__(self, pin, mode):
+        self.pin = pin
+        self.mode = mode
+        self.state = 0
+
+    def value(self, state=None):
+        if state is not None:
+            self.state = state
+        return self.state
+
+# Reemplazo de 'utime' con 'time' para entornos estándar
+import time as utime
+
+# Reemplazo de 'urequests' con 'requests' para entornos estándar
+import requests as urequests
+
 from wifi_lib import wifi_init
 from config import users_config
 

@@ -19,6 +19,15 @@ estado_guiado = {
     }
 }
 
+# Mapeo de productos a estantes
+producto_a_estante = {
+    "Carne": ("usuario1", "A1"),
+    "Frutas": ("usuario1", "A2"),
+    "Verduras": ("usuario2", "B1"),
+    "Lácteos": ("usuario2", "B2"),
+    "Panadería": ("usuario1", "A3")
+}
+
 @app.route('/get_status/<usuario>/<estante>', methods=['GET'])
 def get_status(usuario, estante):
     try:
@@ -36,6 +45,26 @@ def update_status(usuario, estante):
         return jsonify({"status": "OK", "color": color})
     except KeyError:
         return jsonify({"error": "Usuario o estante no válido"}), 404
+
+@app.route('/select_product', methods=['POST'])
+def select_product():
+    data = request.get_json()
+    producto = data.get("producto")
+
+    if producto not in producto_a_estante:
+        return jsonify({"error": "Producto no válido"}), 400
+
+    usuario, estante = producto_a_estante[producto]
+
+    # Apagar todos los LEDs primero
+    for user, estantes in estado_guiado.items():
+        for est in estantes:
+            estado_guiado[user][est]["color"] = "off"
+
+    # Encender el LED del estante correspondiente
+    estado_guiado[usuario][estante]["color"] = "green"
+
+    return jsonify({"status": "OK", "producto": producto, "usuario": usuario, "estante": estante})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
