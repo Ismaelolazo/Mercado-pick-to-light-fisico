@@ -1,6 +1,7 @@
 # 📁 dashboard/dashboard.py
 import panel as pn
 import requests
+from bokeh.themes import Theme
 
 pn.extension()
 
@@ -14,7 +15,6 @@ usuarios = {
 SERVER_URL = "http://localhost:5000"
 
 # Función para actualizar el color del estante
-
 def enviar_color(usuario, estante, color):
     try:
         r = requests.post(f"{SERVER_URL}/update_status/{usuario}/{estante}", json={"color": color})
@@ -61,15 +61,44 @@ def seleccionar_producto(event):
         print(f"Error al seleccionar producto: {e}")
 
 # Widget para seleccionar productos
-producto_selector = pn.widgets.Select(name="Seleccionar Producto", options=productos)
+producto_selector = pn.widgets.Select(name="Seleccionar Producto", options=productos, width=300)
 producto_selector.param.watch(seleccionar_producto, 'value')
 
-# Actualizar el dashboard para incluir la selección de productos
+# Actualización para eliminar el argumento 'style' no válido en pn.pane.Markdown
+header = pn.pane.Markdown(
+    """# Bienvenido al Mercado Pick to Light
+    ### Seleccione un producto para ser guiado al puesto correspondiente mediante LEDs.
+    """,
+    align="center"
+)
+
+footer = pn.pane.Markdown(
+    """---
+    **Nota:** Este sistema utiliza tecnología ESP32 y LEDs para guiar a los clientes.
+    """,
+    align="center"
+)
+
+# Eliminar el argumento 'background' y aplicar estilos mediante CSS
+css = """
+body {
+    background-color: #ecf0f1;
+}
+"""
+
+pn.extension(raw_css=[css])
+
 dashboard = pn.Column(
-    "## Bienvenido al Mercado Pick to Light",
-    "Seleccione un producto para ser guiado:",
-    producto_selector,
-    pn.Row(*panels)
+    header,
+    pn.Spacer(height=20),
+    pn.Row(
+        pn.Spacer(width=200),
+        producto_selector,
+        pn.Spacer(width=200),
+    ),
+    pn.Spacer(height=50),
+    footer,
+    sizing_mode="stretch_width"
 )
 
 dashboard.servable()
