@@ -1,19 +1,22 @@
 # 📁 raspberry/config.py
 from machine import Pin
 
-# Definimos los pines RGB para cada estante por usuario
-# Puedes cambiar los pines según cómo los tengas conectados
-users_config = {
-    "usuario1": {
-        "A1": {"r": Pin(2, Pin.OUT), "g": Pin(3, Pin.OUT), "b": Pin(4, Pin.OUT)},
-        "A2": {"r": Pin(5, Pin.OUT), "g": Pin(6, Pin.OUT), "b": Pin(7, Pin.OUT)},
-        "A3": {"r": Pin(8, Pin.OUT), "g": Pin(9, Pin.OUT), "b": Pin(10, Pin.OUT)},
-        "A4": {"r": Pin(11, Pin.OUT), "g": Pin(12, Pin.OUT), "b": Pin(13, Pin.OUT)},
-    },
-    "usuario2": {
-        "B1": {"r": Pin(14, Pin.OUT), "g": Pin(15, Pin.OUT), "b": Pin(16, Pin.OUT)},
-        "B2": {"r": Pin(17, Pin.OUT), "g": Pin(18, Pin.OUT), "b": Pin(19, Pin.OUT)},
-        "B3": {"r": Pin(20, Pin.OUT), "g": Pin(21, Pin.OUT), "b": Pin(22, Pin.OUT)},
-        "B4": {"r": Pin(26, Pin.OUT), "g": Pin(27, Pin.OUT), "b": Pin(28, Pin.OUT)},
-    }
+# Configuración física por góndola, sin relación con usuarios
+# Este archivo es para el PRIMER protoboard (rasp1), que controlará G01–G10
+
+# Mapeo de góndolas reales a pines GPIO del Raspberry Pi Pico W
+# Asegúrate de conectar físicamente los LEDs a estos pines
+
+gondolas = {
+    "G01": Pin(0, Pin.OUT),
+    "G02": Pin(1, Pin.OUT),
+    "G03": Pin(2, Pin.OUT),
+    "G04": Pin(3, Pin.OUT),
+    "G05": Pin(4, Pin.OUT),
+    "G06": Pin(5, Pin.OUT),
+    "G07": Pin(6, Pin.OUT),
+    "G08": Pin(7, Pin.OUT),
+    "G09": Pin(8, Pin.OUT),
+    "G10": Pin(9, Pin.OUT)
 }
+
