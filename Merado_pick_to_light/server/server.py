@@ -3,6 +3,8 @@ from flask import Flask, jsonify
 import firebase_admin
 from firebase_admin import credentials, firestore
 import os
+import threading
+import time
 
 app = Flask(__name__)
 
@@ -12,20 +14,34 @@ cred = credentials.Certificate(cred_path)
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
-# Ruta para consultar si una góndola debe encenderse
+# 🧠 Caché en memoria
+estado_cache = {}
+cache_lock = threading.Lock()
+
+# 🕒 Intervalo de actualización en segundos
+ACTUALIZAR_CADA = 5
+
+def actualizar_cache_periodicamente():
+    global estado_cache
+    while True:
+        try:
+            doc = db.collection('Guiado').document('EstadoGondolas').get()
+            if doc.exists:
+                with cache_lock:
+                    estado_cache = doc.to_dict()
+                print("[CACHE] Estado actualizado")
+        except Exception as e:
+            print(f"[ERROR CACHE] {e}")
+        time.sleep(ACTUALIZAR_CADA)
+
+# Ruta para consultar el estado cacheado
 @app.route('/get_status/gondolas/<gondola_id>', methods=['GET'])
 def get_gondola_status(gondola_id):
-    try:
-        doc_ref = db.collection('Guiado').document('EstadoGondolas')
-        doc = doc_ref.get()
-        if doc.exists:
-            data = doc.to_dict()
-            estado = 1 if data.get(gondola_id) else 0
-            return jsonify({"estado": estado})
-        else:
-            return jsonify({"estado": 0}), 404
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    with cache_lock:
+        estado = estado_cache.get(gondola_id, False)
+    return jsonify({"estado": 1 if estado else 0})
 
+# Lanzar hilo de actualización de caché al iniciar
 if __name__ == '__main__':
+    threading.Thread(target=actualizar_cache_periodicamente, daemon=True).start()
     app.run(host='0.0.0.0', port=5000)
