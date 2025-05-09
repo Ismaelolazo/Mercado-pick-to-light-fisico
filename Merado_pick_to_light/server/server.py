@@ -7,7 +7,7 @@ import os
 app = Flask(__name__)
 
 # Inicializar Firebase
-cred_path = os.path.join(os.path.dirname(__file__), '..', 'firebase', 'parqueosupreme-firebase-adminsdk-i836b-44b7396c40.json')
+cred_path = os.path.join(os.path.dirname(__file__), '..', 'firebase', 'picktolight-ae00d-firebase-adminsdk-fbsvc-854efeaaf9.json')
 cred = credentials.Certificate(cred_path)
 firebase_admin.initialize_app(cred)
 db = firestore.client()
