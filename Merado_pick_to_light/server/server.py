@@ -19,7 +19,7 @@ estado_cache = {}
 cache_lock = threading.Lock()
 
 # 🕒 Intervalo de actualización en segundos
-ACTUALIZAR_CADA = 5
+ACTUALIZAR_CADA = 20
 
 def actualizar_cache_periodicamente():
     global estado_cache
